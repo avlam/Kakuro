@@ -2,10 +2,7 @@ import numpy as np
 import itertools
 
 
-def combinations(target_sum, n_digits):
-    """
-    Given a target_sum, and the number of unique integers to use, return set of tuples containing possible number combinations.
-    """
+def kakuro_combinations(target_sum, n_digits, include=set(), exclude=set()):
     output=set()
 #     check if valid
     min_set = tuple(x+1 for x in range(n_digits))
@@ -29,4 +26,14 @@ def combinations(target_sum, n_digits):
                 combo = guess*digits
                 combo = combo[combo != 0]
                 output.add(tuple(combo))
+#     filter combos for additional information if provided
+    blacklist = set()
+    for combo in output:
+        if any([known_not in combo for known_not in exclude]):
+            blacklist.add(combo)
+        elif any([known not in combo for known in include]):
+            blacklist.add(combo)
+    output.difference_update(blacklist)
+    if len(output) == 0:
+        print(f'After eliminating {len(blacklist)} combinations, none remained.')
     return output
